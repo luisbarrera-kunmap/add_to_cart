@@ -1,0 +1,53 @@
+<script>
+(function() {
+  // Get current count from sessionStorage, or start at 0
+    var productCount = sessionStorage.getItem('cartProductCount');
+    productCount = productCount ? parseInt(productCount) : 0;
+
+    // Limit to 3 letters: a (0), b (1), c (2) → reset to a after c
+    var indexLetter = String.fromCharCode(97 + (productCount % 3)); // 97 = 'a'
+
+    // Increment count for next product
+    sessionStorage.setItem('cartProductCount', productCount + 1);
+  
+  setTimeout(function() {
+  var payload = {
+    email: "{{Correo cliente}}",
+    service_name: "{{Nombre servicio}}",
+    sku: "{{SKU servicio}}",
+    category: "{{Categoria servicio}}",
+    quantity: "{{Cantidad servicio}}",
+    price: "{{Precio servicio}}",
+    image_url: "{{URL Imagen servicio}}",
+    timestamp: "{{Timestamp}}",
+    medical_unit: "{{Unidad medica}}",
+    url: "{{URL Servicio}}",
+    order: indexLetter,
+    pricem: "{{Precio member}}",
+    cita: "{{Cita servicio}}",
+    discount: "{{Descuento Servicio}}",
+    utmSource: "{{utm_source}}",
+    utmCampaign: "{{utm_campaign}}",
+    utmMedium: "{{utm_medium}}"
+  };
+
+  console.log("Sending payload:", payload);
+
+  fetch("https://ecommerce.kunmap.com/Christus/send-to-eloqua.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  }).then(function(response) {
+    if (!response.ok) {
+      console.error("Webhook error:", response.status, response.statusText);
+    } else {
+      console.log("Data sent to Eloqua webhook.");
+    }
+  }).catch(function(error) {
+      console.error("Fetch error:", error);
+    });
+  }, 150); // 150ms delay
+})();
+</script>
